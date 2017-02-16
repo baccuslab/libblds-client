@@ -1,0 +1,13 @@
+*.swp
+*.o
+*.so
+*.dylib
+*.stash
+Makefile*
+debug/*
+build/*
+release/*
+lib/*
+python/__pycache__/*
+moc_*
+test/test
