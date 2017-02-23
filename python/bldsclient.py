@@ -228,14 +228,14 @@ class BldsClient():
         if name in ('gain', 'adc-range', 'sample-rate'):
             return struct.unpack('<f', buf[:4])[0]
         elif name in ('trigger', 'connect-time', 'start-time', 
-                'source-type', 'device-type', 'state'):
+                'source-type', 'device-type', 'state', 'location'):
             return buf.decode('utf8')
         elif name == 'has-analog-output':
             return struct.unpack('<?', buf[:1])[0]
         elif name in ('nchannels', 'plug', 'chip-id', 'read-interval'):
             return struct.unpack('<I', buf[:4])[0]
         elif name == 'analog-output':
-            size = struct.unpack('<I', buf[:4])
+            size = struct.unpack('<I', buf[:4])[0]
             aout = np.frombuffer(buf[4:], dtype=np.double, count=size)
             return aout
         elif name == 'configuration':
@@ -250,10 +250,15 @@ class BldsClient():
             return config
 
     def _decode_server_param(self, name, buf):
-        if name in ('save-file', 'save-directory'):
+        if name in ('save-file', 'save-directory', 'source-type', 
+                'source-location', 'start-time'):
             return buf.decode('utf8')
         elif name in ('recording-length', 'read-interval'):
             return struct.unpack('<I', buf[:4])[0]
+        elif name == 'recording-position':
+            return struct.unpack('<f', buf[:4])[0]
+        elif name in ('recording-exists', 'source-exists'):
+            return struct.unpack('<?', buf[:1])[0]
 
     def _send_msg(self, msg):
         if not self._connected:

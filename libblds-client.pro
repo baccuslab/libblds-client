@@ -14,12 +14,13 @@ INCLUDEPATH += . include \
 	/usr/local/include
 
 QT -= gui widgets
-QT += network
+QT += network concurrent
 CONFIG += c++11 debug_and_release shared
 CONFIG -= no_pkgconfig
 QT_CONFIG += link_pkg_config
 
-LIBS += -L/usr/local/lib -larmadillo
+LIBS += -L/usr/local/lib -larmadillo \
+	-L../libdata-source/lib -ldata-source
 
 mac {
 	QMAKE_SONAME_PREFIX += @rpath
