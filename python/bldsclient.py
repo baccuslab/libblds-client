@@ -223,6 +223,22 @@ class BldsClient():
             raise BldsError('Unknown server parameter: {}'.format(param))
         self._send_msg(b'\n'.join(vals))
         self._recv_msg()
+        
+    def set_source(self, param, value):
+        """Set the value of a named parameter of the managed data source."""
+        vals = [b'set-source', param.encode('utf8')]
+        if param == 'trigger':
+            vals.append(value.encode('utf8'))
+        elif param == 'adc-range':
+            vals.append(struct.pack('<f', value))
+        elif param in ('analog-output', 'configuration'):
+            vals.append(struct.pack('<I', value.size) + value.tobytes())
+        elif param == 'plug':
+            vals.append(struct.pack('<I', value))
+        else:
+            raise BldsError('Unknown source parameter: {}'.format(param))
+        self._send_msg(b'\n'.join(vals))
+        self._recv_msg()
 
     def _decode_source_param(self, name, buf):
         if name in ('gain', 'adc-range', 'sample-rate'):

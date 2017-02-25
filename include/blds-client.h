@@ -35,7 +35,7 @@
  * lower-level line-based protocol over TCP, and for making the supported
  * status requests via HTTP.
  */
-class BldsClient : public QObject {
+class VISIBILITY BldsClient : public QObject {
 	Q_OBJECT
 
 		/*! The port on which the BLDS listens for HTTP requests. */
@@ -278,10 +278,10 @@ class BldsClient : public QObject {
 		void handleReadyRead();
 
 		/* Handle a finished HTTP reply for the server's status. */
-		void handleServerStatusReply(QNetworkReply* reply);
+		void handleServerStatusReply();
 
 		/* Handle a finished HTTP reply for the source's status. */
-		void handleSourceStatusReply(QNetworkReply* reply);
+		void handleSourceStatusReply();
 
 	private:
 
@@ -346,7 +346,10 @@ class BldsClient : public QObject {
 
 		/* Request object used to make status HTTP requests. */
 		QNetworkRequest m_serverRequest;
+		QNetworkReply* m_serverReply;
+
 		QNetworkRequest m_sourceRequest;
+		QNetworkReply* m_sourceReply;
 
 		/* The URLs for the above requests. Changes when the 
 		 * request changes.

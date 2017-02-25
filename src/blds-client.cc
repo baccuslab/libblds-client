@@ -26,11 +26,13 @@ BldsClient::BldsClient(const QString& hostname, quint16 port, QObject *parent) :
 	m_serverUrl.setHost(m_hostname);
 	m_serverUrl.setPort(BldsHttpPort);
 	m_serverUrl.setPath(BldsServerStatusPath);
+	m_serverRequest.setUrl(m_serverUrl);
 
 	m_sourceUrl.setScheme("http");
 	m_sourceUrl.setHost(m_hostname);
 	m_sourceUrl.setPort(BldsHttpPort);
 	m_sourceUrl.setPath(BldsSourceStatusPath);
+	m_sourceRequest.setUrl(m_sourceUrl);
 }
 
 BldsClient::~BldsClient()
@@ -167,7 +169,8 @@ void BldsClient::set(const QString& param, const QVariant& data)
 void BldsClient::setSource(const QString& param, const QVariant& data)
 {
 	QByteArray buffer = { "set-source\n" };
-	buffer.append(datasource::serialize(param.toUtf8() + "\n", data));
+	buffer.append(param.toUtf8() + "\n");
+	buffer.append(datasource::serialize(param, data));
 	m_stream << buffer;
 }
 
@@ -371,34 +374,33 @@ quint16 BldsClient::port() const
 
 void BldsClient::requestServerStatus()
 {
-	QObject::connect(m_manager, &QNetworkAccessManager::finished,
+	m_serverReply = m_manager->get(m_serverRequest);
+	QObject::connect(m_serverReply, &QNetworkReply::finished,
 			this, &BldsClient::handleServerStatusReply);
-	m_manager->get(m_serverRequest);
-
 }
 
 void BldsClient::requestSourceStatus()
 {
-	QObject::connect(m_manager, &QNetworkAccessManager::finished,
+	m_sourceReply = m_manager->get(m_sourceRequest);
+	QObject::connect(m_sourceReply, &QNetworkReply::finished,
 			this, &BldsClient::handleSourceStatusReply);
-	m_manager->get(m_sourceRequest);
 }
 
-void BldsClient::handleServerStatusReply(QNetworkReply* reply)
+void BldsClient::handleServerStatusReply()
 {
-
-	QObject::disconnect(m_manager, &QNetworkAccessManager::finished,
+	QObject::disconnect(m_serverReply, &QNetworkReply::finished,
 			this, &BldsClient::handleServerStatusReply);
-	emit serverStatus(QJsonDocument::fromJson(reply->readAll()).object());
-	reply->deleteLater();
+	emit serverStatus(QJsonDocument::fromJson(m_serverReply->readAll()).object());
+	m_serverReply->deleteLater();
 }
 
-void BldsClient::handleSourceStatusReply(QNetworkReply* reply)
+void BldsClient::handleSourceStatusReply()
 {
-	QObject::disconnect(m_manager, &QNetworkAccessManager::finished,
+	QObject::disconnect(m_sourceReply, &QNetworkReply::finished,
 			this, &BldsClient::handleSourceStatusReply);
 	emit sourceStatus(
-			reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt() == 200,
-			QJsonDocument::fromJson(reply->readAll()).object());
+			m_sourceReply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt() == 200,
+			QJsonDocument::fromJson(m_sourceReply->readAll()).object());
+	m_sourceReply->deleteLater();
 }
 
