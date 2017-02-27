@@ -10,9 +10,9 @@
 #define BLDS_CLIENT_H
 
 #ifdef COMPILE_LIBBLDS_CLIENT
-# define VISIBILITY Q_DECL_EXPORT
+# define LIBBLDS_CLIENT_VISIBILITY Q_DECL_EXPORT
 #else
-# define VISIBILITY Q_DECL_IMPORT
+# define LIBBLDS_CLIENT_VISIBILITY Q_DECL_IMPORT
 #endif
 
 #include "blds/include/data-frame.h"
@@ -35,7 +35,7 @@
  * lower-level line-based protocol over TCP, and for making the supported
  * status requests via HTTP.
  */
-class VISIBILITY BldsClient : public QObject {
+class LIBBLDS_CLIENT_VISIBILITY BldsClient : public QObject {
 	Q_OBJECT
 
 		/*! The port on which the BLDS listens for HTTP requests. */

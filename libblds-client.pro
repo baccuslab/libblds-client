@@ -19,8 +19,16 @@ CONFIG += c++11 debug_and_release shared
 CONFIG -= no_pkgconfig
 QT_CONFIG += link_pkg_config
 
+DEFINES += COMPILE_LIBBLDS_CLIENT
+
 LIBS += -L/usr/local/lib -larmadillo \
-	-L../libdata-source/lib -ldata-source
+	-L../libdata-source/lib 
+
+win32 {
+	LIBS += -ldata-source0
+} else {
+	LIBS += -ldata-source
+}
 
 mac {
 	QMAKE_SONAME_PREFIX += @rpath

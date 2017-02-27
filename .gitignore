@@ -12,3 +12,4 @@ python/__pycache__/*
 moc_*
 test/test
 docs/*
+*.rc
