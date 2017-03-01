@@ -246,14 +246,16 @@ class BldsClient():
             aout = np.frombuffer(buf[4:], dtype=np.double, count=size)
             return aout
         elif name == 'configuration':
-            size = struct.unpack('<I', buf[:4])
-            config = np.frombuffer(buf[4:], 
-                    dtype=np.dtype({
-                        'names' : 
-                            ['index', 'xpos', 'x', 'ypos', 'y', 'label'],
-                        'types' : 
-                            [np.uint32, np.uint32, np.uint16, np.uint32, np.uint16, np.uint8]
-                        }), count=size)
+            size = struct.unpack('<I', buf[:4])[0]
+            dtype = np.dtype([
+                    ('index', np.uint32),
+                    ('xpos', np.uint32),
+                    ('x', np.uint16),
+                    ('ypos', np.uint32),
+                    ('y', np.uint16),
+                    ('label', np.uint8)
+                ])
+            config = np.frombuffer(buf[4:], dtype=dtype, count=size)
             return config
 
     def _decode_server_param(self, name, buf):

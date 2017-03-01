@@ -13,6 +13,10 @@ INCLUDEPATH += . include \
 	../blds/include \
 	/usr/local/include
 
+linux {
+	INCLUDEPATH += /usr/include/hdf5/serial
+}
+
 QT -= gui widgets
 QT += network concurrent
 CONFIG += c++11 debug_and_release shared
