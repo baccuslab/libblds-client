@@ -31,9 +31,9 @@ class DataFrame():
         data : numpy.ndarray
             The data for this chunk.
         '''
-        self._start = start
-        self._stop = stop
-        self._data = data
+        self.start = start
+        self.stop = stop
+        self.data = data
 
     @staticmethod
     def deserialize(buf):
@@ -46,28 +46,19 @@ class DataFrame():
 
     def serialize(self):
         """Serialize a DataFrame to bytes."""
-        return struct.pack('<ffII', self._start, self._stop,
-                *self._data.shape) + self._data.tobytes()
+        return struct.pack('<ffII', self.start, self.stop,
+                *self.data.shape) + self.data.tobytes()
 
     def nchannels(self):
         """Return the number of channels in the chunk of data."""
-        return self._data.shape[0]
+        return self.data.shape[0]
 
     def nsamples(self):
         """Return the number of samples in the chunk of data."""
-        return self._data.shape[1]
+        return self.data.shape[1]
 
-    def start(self):
-        """Return the start time for this frame."""
-        return self._start
-
-    def stop(self):
-        """Return the stop time for this frame."""
-        return self._stop
-
-    def data(self):
-        """Return the data contained in the frame."""
-        return self._data
+    def __getitem__(self, *args):
+        return self.data.__getitem__(*args)
 
 class BldsError(Exception):
     """The BldsException class is used to indicate communication errors
@@ -227,11 +218,11 @@ class BldsClient():
     def set_source(self, param, value):
         """Set the value of a named parameter of the managed data source."""
         vals = [b'set-source', param.encode('utf8')]
-        if param == 'trigger':
+        if param in ('trigger', 'configuration-file'):
             vals.append(value.encode('utf8'))
         elif param == 'adc-range':
             vals.append(struct.pack('<f', value))
-        elif param in ('analog-output', 'configuration'):
+        elif param in ('analog-output',):
             vals.append(struct.pack('<I', value.size) + value.tobytes())
         elif param == 'plug':
             vals.append(struct.pack('<I', value))
