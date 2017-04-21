@@ -8,8 +8,10 @@ debug/*
 build/*
 release/*
 lib/*
-python/__pycache__/*
+bldsclient/__pycache__/*
+*egg-info*
 moc_*
 test/test
 docs/*
 *.rc
+

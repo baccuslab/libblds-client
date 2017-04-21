@@ -10,6 +10,8 @@ import numpy as np
 
 _RECV_SIZE = 2048
 
+__all__ = [ 'DataFrame', 'BldsError', 'BldsClient' ]
+
 class DataFrame():
     def __init__(self, start, stop, data):
         '''Create a DataFrame.
